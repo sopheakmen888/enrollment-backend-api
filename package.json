@@ -14,9 +14,6 @@
     "seed": "node prisma/seed.js",
     "postinstall": "prisma generate"
   },
-  "prisma": {
-    "seed": "node prisma/seed.js"
-  },
   "dependencies": {
     "@prisma/client": "^6.10.0",
     "cors": "^2.8.6",
