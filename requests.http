@@ -1,0 +1,82 @@
+### Use with the "REST Client" extension in VS Code.
+### The server must be running: npm run dev
+### Reset data anytime with: npm run seed
+
+@base = http://localhost:3000/api
+
+### ---------- S6.1 — List courses (10 pts) ----------
+
+### All courses (expect 5 courses)
+GET {{base}}/courses
+
+### Search filter (expect 1 course: "Database Fundamentals")
+GET {{base}}/courses?search=data
+
+### ---------- S6.2 — Student with enrollments (10 pts) ----------
+
+### Student 1 with enrollments (expect Sok Pisey with 2 enrollments)
+GET {{base}}/students/1
+
+### Unknown student (expect 404)
+GET {{base}}/students/999
+
+### ---------- S6.3 — Enrollment report, raw SQL (15 pts) ----------
+
+### Expect on fresh seed:
+### Web Development Basics = 2 enrollments / $240,
+### Database Fundamentals = 2 / $200 (one is DROPPED — still counted,
+### the fee is not refunded), Networking Essentials = 1 / $90,
+### UX Design Workshop = 1 / $200, JavaScript Programming = 0 / $0
+GET {{base}}/reports/course-enrollments
+
+### ---------- S7.1 — Enroll a student (25 pts) ----------
+
+### Happy path (expect 201, status ACTIVE,
+### then GET /courses shows course 1 seatsAvailable 18 -> 17)
+POST {{base}}/enrollments
+Content-Type: application/json
+
+{ "studentId": 3, "courseId": 1 }
+
+### Course is full: course 5 has 0 seats (expect 409)
+POST {{base}}/enrollments
+Content-Type: application/json
+
+{ "studentId": 2, "courseId": 5 }
+
+### Already enrolled: student 1 is ACTIVE in course 1 (expect 409)
+POST {{base}}/enrollments
+Content-Type: application/json
+
+{ "studentId": 1, "courseId": 1 }
+
+### Re-enroll after drop is ALLOWED: student 2 DROPPED course 2
+### (expect 201, seatsAvailable 14 -> 13)
+POST {{base}}/enrollments
+Content-Type: application/json
+
+{ "studentId": 2, "courseId": 2 }
+
+### Unknown student (expect 404)
+POST {{base}}/enrollments
+Content-Type: application/json
+
+{ "studentId": 999, "courseId": 1 }
+
+### Unknown course (expect 404)
+POST {{base}}/enrollments
+Content-Type: application/json
+
+{ "studentId": 1, "courseId": 999 }
+
+### ---------- S7.2 — Drop an enrollment (10 pts) ----------
+
+### Happy path: enrollment 5 is ACTIVE (expect 200, status DROPPED,
+### then GET /courses shows course 4 seatsAvailable 9 -> 10)
+PUT {{base}}/enrollments/5/drop
+
+### Drop the same enrollment again (expect 409)
+PUT {{base}}/enrollments/5/drop
+
+### Unknown enrollment (expect 404)
+PUT {{base}}/enrollments/999/drop
