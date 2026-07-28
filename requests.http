@@ -2,7 +2,7 @@
 ### The server must be running: npm run dev
 ### Reset data anytime with: npm run seed
 
-@base = https://enrollment-backend-api.vercel.app/api
+@base = http://localhost:3000/api
 
 ### ---------- S6.1 — List courses (10 pts) ----------
 
